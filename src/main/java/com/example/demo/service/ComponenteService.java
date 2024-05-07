@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ComponenteService {
+
     @Autowired
     private ComponenteRepository componenteRepository;
 
@@ -36,10 +37,9 @@ public class ComponenteService {
                 .orElseThrow(() -> new RuntimeException("Componente no encontrado con ID: " + idComp));
     }
 
-    public Componente actualizarComponente(int idComp, Componente componente) {
+    public Componente actualizarComponente(Componente componente) {
         validarCamposObligatorios(componente);
         validarValores(componente);
-        componente.setIdComp(idComp);
         return componenteRepository.save(componente);
     }
 

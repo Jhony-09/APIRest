@@ -2,13 +2,13 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Componente;
 import com.example.demo.repository.ComponenteRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,31 +17,28 @@ import java.util.Optional;
 @Validated
 public class ComponenteController {
 
-    private final ComponenteRepository componenteRepository;
-
     @Autowired
-    public ComponenteController(ComponenteRepository componenteRepository) {
-        this.componenteRepository = componenteRepository;
-    }
+    private  ComponenteRepository componenteRepository;
+
 
     @GetMapping("/")
     public ResponseEntity<String> hello() {
         return ResponseEntity.ok("Hello, World!");
     }
 
-    @GetMapping
+    @GetMapping("/listar")
     public ResponseEntity<List<Componente>> listarComponentes() {
         List<Componente> componentes = componenteRepository.findAll();
         return ResponseEntity.ok(componentes);
     }
 
-    @PostMapping
+    @PostMapping("/crear")
     public ResponseEntity<Componente> crearComponente(@RequestBody @Validated Componente componente) {
         Componente nuevoComponente = componenteRepository.save(componente);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoComponente);
     }
 
-    @GetMapping("/{idComp}")
+    @GetMapping("/{id}")
     public ResponseEntity<Componente> obtenerComponente(@PathVariable int idComp) {
         Optional<Componente> componenteOptional = componenteRepository.findById(idComp);
         return componenteOptional
@@ -49,24 +46,18 @@ public class ComponenteController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{idComp}")
-    public ResponseEntity<Componente> actualizarComponente(@PathVariable int idComp, @RequestBody @Validated Componente componente) {
-        Optional<Componente> componenteOptional = componenteRepository.findById(idComp);
-        return componenteOptional
-                .map(existingComponente -> {
-                    componente.setIdComp(idComp);
-                    Componente componenteActualizado = componenteRepository.save(componente);
-                    return ResponseEntity.ok(componenteActualizado);
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-    
-    @DeleteMapping
-        public ResponseEntity<Void> eliminarComponentes(@RequestParam("ids") List<Integer> ids) {
-        componenteRepository.deleteAllById(ids);
-        return ResponseEntity.noContent().build();
+    @PostMapping("/actualizar")
+    public ResponseEntity  actualizarComponente( @RequestBody Componente componente) {
+        Componente componenteActualizado = componenteRepository.save(componente);
+        return ResponseEntity.ok(componenteActualizado);
+
     }
 
+    @DeleteMapping("/eliminar")
+    public ResponseEntity eliminarComponentes(@RequestParam int idComp) {
+        componenteRepository.deleteById(idComp);
+        return ResponseEntity.noContent().build();
+    }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException ex) {

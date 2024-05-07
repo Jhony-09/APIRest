@@ -6,12 +6,11 @@ package com.example.demo.repository;
 
 import com.example.demo.model.Componente;
 import org.springframework.data.jpa.repository.JpaRepository;
-/**
- *
- * @author jhony
- */
+
+
 
 
 public interface ComponenteRepository extends JpaRepository<Componente, Integer> {
+
 }
 
